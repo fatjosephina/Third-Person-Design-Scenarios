@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class ContextualMessageControl : MonoBehaviour
 {
+    [SerializeField]
+    float fadeOutDuration = 1;
+
     private CanvasGroup canvasGroup;
     private TMP_Text messageText;
 
@@ -21,11 +24,20 @@ public class ContextualMessageControl : MonoBehaviour
         canvasGroup.alpha = 1;
         messageText.text = message;
         yield return new WaitForSeconds(duration);
+        float fadeElapsedTime = 0;
+        float fadeStartTime = Time.time;
+        while (fadeElapsedTime < fadeOutDuration)
+        {
+            fadeElapsedTime = Time.time - fadeStartTime;
+            canvasGroup.alpha = 1 - fadeElapsedTime / fadeOutDuration;
+            yield return null;
+        }
         canvasGroup.alpha = 0;
     }
 
     private void OnContextualMessageTriggered(string message, float messageDuration)
     {
+        StopAllCoroutines();
         StartCoroutine(ShowMessage(message, messageDuration));
     }
 
